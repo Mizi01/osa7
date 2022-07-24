@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const UsersForm = ({ users }) => {
   console.log(users)
   return (
@@ -14,7 +16,9 @@ const UsersForm = ({ users }) => {
           </tr>
           {users.map(user => (
             <tr key={user.name}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
               <td>
                 <center>{user.blogs.length}</center>
               </td>

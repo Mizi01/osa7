@@ -9,7 +9,8 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import UsersForm from './components/UsersForm'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import User from './components/User'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -148,15 +149,25 @@ const App = () => {
           <Route
             path="/"
             element={blogs.map(blog => (
+              <div key={blog.id}>
+                <Link to={`/blogs/${blog.id}`}>
+                  {blog.title} {blog.author}
+                </Link>
+              </div>
+            ))}
+          />
+          <Route
+            path="/blogs/:id"
+            element={
               <Blog
-                key={blog.id}
-                blog={blog}
+                blog={blogs}
                 handleLike={handleLike}
                 handleDelete={handleDelete}
                 user={user}
               />
-            ))}
+            }
           />
+          <Route path="/users/:id" element={<User users={users} />} />
           <Route path="/users" element={<UsersForm users={users} />} />
         </Routes>
       </div>

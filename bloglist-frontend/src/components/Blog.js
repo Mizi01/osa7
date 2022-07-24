@@ -1,49 +1,39 @@
-import { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 
 const Blog = ({ blog, handleLike, user, handleDelete }) => {
-  const [visible, setVisible] = useState(false)
+  const id = useParams().id
+  const blogToFind = blog.find(n => n.id === id)
 
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
+  console.log(blogToFind)
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
-  if (!visible)
-    return (
-      <div style={blogStyle} id="short">
-        <div>
-          {blog.title} {blog.author}
-        </div>
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-    )
   return (
-    <div style={blogStyle}>
+    <div>
       <div>
-        {blog.title} {blog.author}
+        <h2>
+          {blogToFind.title} by: {blogToFind.author}
+        </h2>
       </div>
-      <div>{blog.url}</div>
       <div>
-        {blog.likes}{' '}
-        <button id="like-button" onClick={() => handleLike(blog)}>
+        {blogToFind.url ? (
+          <Link to={blogToFind.url}>{blogToFind.url}</Link>
+        ) : (
+          <></>
+        )}
+      </div>
+      <div>
+        {blogToFind.likes}{' '}
+        <button id="like-button" onClick={() => handleLike(blogToFind)}>
           like
         </button>
       </div>
-      {user !== null && blog.user.id === user.id ? (
-        <button id="delete-button" onClick={() => handleDelete(blog)}>
+      {user !== null && blogToFind.user.id === user.id ? (
+        <button id="delete-button" onClick={() => handleDelete(blogToFind)}>
           delete
         </button>
       ) : (
         <></>
       )}
-      <button onClick={toggleVisibility}>hide</button>
+      <div>added by {blogToFind.user.name}</div>
     </div>
   )
 }
