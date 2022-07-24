@@ -1,11 +1,15 @@
+/* eslint-disable indent */
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import usersService from './services/users'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import UsersForm from './components/UsersForm'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -14,6 +18,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
     updatePage()
@@ -94,6 +99,10 @@ const App = () => {
       .then(blogs =>
         setBlogs(blogs.sort((eka, toka) => (eka.likes > toka.likes ? -1 : 1)))
       )
+    usersService.getAll().then(users => {
+      setUsers(users)
+    })
+    console.log(users)
     console.log(blogs)
   }
 
@@ -112,38 +121,46 @@ const App = () => {
   const blogFormRef = useRef()
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification message={message} messageClass={messageClass} />
-      {user === null ? (
-        <Togglable buttonLabel="login">
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-        </Togglable>
-      ) : (
-        <div>
-          <p>{user.name} logged in</p>
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
+    <Router>
+      <div>
+        <h2>blogs</h2>
+        <Notification message={message} messageClass={messageClass} />
+        {user === null ? (
+          <Togglable buttonLabel="login">
+            <LoginForm
+              username={username}
+              password={password}
+              handleUsernameChange={({ target }) => setUsername(target.value)}
+              handlePasswordChange={({ target }) => setPassword(target.value)}
+              handleSubmit={handleLogin}
+            />
           </Togglable>
-          {logOutForm()}
-        </div>
-      )}
-      {blogs.map(blog => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleDelete={handleDelete}
-          user={user}
-        />
-      ))}
-    </div>
+        ) : (
+          <div>
+            <p>{user.name} logged in</p>
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <BlogForm createBlog={addBlog} />
+            </Togglable>
+            {logOutForm()}
+          </div>
+        )}
+        <Routes>
+          <Route
+            path="/"
+            element={blogs.map(blog => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleLike={handleLike}
+                handleDelete={handleDelete}
+                user={user}
+              />
+            ))}
+          />
+          <Route path="/users" element={<UsersForm users={users} />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
